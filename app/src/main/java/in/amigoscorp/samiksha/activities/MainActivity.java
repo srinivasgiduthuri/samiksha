@@ -17,6 +17,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -39,20 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager viewPager;
+    private AdView bannerAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.container);
-        viewPager.setAdapter(sectionsPagerAdapter);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
-
         ScheduledExecutorService scheduler =
                 Executors.newSingleThreadScheduledExecutor();
 
@@ -67,6 +62,21 @@ public class MainActivity extends AppCompatActivity {
                         });
                     }
                 }, 0, 4, TimeUnit.HOURS);
+
+        setContentView(R.layout.activity_main);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        viewPager = (ViewPager) findViewById(R.id.container);
+        viewPager.setAdapter(sectionsPagerAdapter);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(viewPager);
+
+        bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        bannerAdView.loadAd(adRequest);
+
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
@@ -82,11 +92,16 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return 4;
+            return 5;
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
+            /*for (Tab tab : tabs) {
+                if (tab.getRank() == position + 1) {
+                    return tab.getName();
+                }
+            }*/
             switch (position) {
                 case 0:
                     return "ALL";
@@ -96,6 +111,8 @@ public class MainActivity extends AppCompatActivity {
                     return "HINDI";
                 case 3:
                     return "ENGLISH";
+                case 4:
+                    return "TAMIL";
             }
             return null;
         }
@@ -136,10 +153,13 @@ public class MainActivity extends AppCompatActivity {
             recyclerView = (RecyclerView) rootView.findViewById(R.id.recyclerView);
             recyclerView.setHasFixedSize(true);
 
+            final TextView noContentTextView = (TextView) rootView.findViewById(R.id.no_content_text_view);
+            noContentTextView.setVisibility(View.GONE);
+
             layoutManager = new LinearLayoutManager(rootView.getContext());
 
             recyclerView.setLayoutManager(layoutManager);
-            getData(rootView.getContext(), getArguments().getString(ARG_SECTION_NAME));
+            getData(rootView.getContext(), getArguments().getString(ARG_SECTION_NAME), noContentTextView);
 
             /*List<String> urls = new ArrayList<>();
             urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/shatamanam_bhavati_et00044995_10-08-2016_03-32-09.jpg");
@@ -165,7 +185,7 @@ public class MainActivity extends AppCompatActivity {
                     // Your code to refresh the list here.
                     // Make sure you call swipeContainer.setRefreshing(false)
                     // once the network request has completed successfully.
-                    fetchReviewsAsync(rootView.getContext(), getArguments().getString(ARG_SECTION_NAME));
+                    fetchReviewsAsync(rootView.getContext(), getArguments().getString(ARG_SECTION_NAME), noContentTextView);
                 }
             });
             // Configure the refreshing colors
@@ -178,19 +198,19 @@ public class MainActivity extends AppCompatActivity {
             return rootView;
         }
 
-        private void fetchReviewsAsync(Context context, String sectionName) {
+        private void fetchReviewsAsync(Context context, String sectionName, TextView noContentTextView) {
             // Send the network request to fetch the updated data
             // `client` here is an instance of Android Async HTTP
             // getHomeTimeline is an example endpoint.
 
             // Remember to CLEAR OUT old items before appending in the new ones
             new AwsUtils().execute();
-            getData(context, sectionName);
+            getData(context, sectionName, noContentTextView);
             swipeContainer.setRefreshing(false);
         }
 
 
-        private void getData(final Context context, final String sectionName) {
+        private void getData(final Context context, final String sectionName, final TextView noContentTextView) {
             class ReviewsFetcher extends AsyncTask<Void, Void, List<Review>> {
                 private ProgressDialog progressDialog;
 
@@ -204,7 +224,7 @@ public class MainActivity extends AppCompatActivity {
                 protected void onPostExecute(List<Review> reviews) {
                     super.onPostExecute(reviews);
                     progressDialog.dismiss();
-                    loadReviews(reviews, context, getFragmentManager());
+                    loadReviews(reviews, context, getFragmentManager(), noContentTextView);
                 }
 
                 @Override
@@ -220,6 +240,18 @@ public class MainActivity extends AppCompatActivity {
                                 return review1.getRank() - review2.getRank();
                             }
                         });
+
+                        /*if ("ALL".equalsIgnoreCase(sectionName)) {
+                            return reviews;
+                        } else {
+                            List<Review> filteredReviews = new ArrayList<>();
+                            for (Review review : reviews) {
+                                if (StringUtils.equalsIgnoreCase(review.getLanguage(), sectionName)) {
+                                    filteredReviews.add(review);
+                                }
+                            }
+                            return filteredReviews;
+                        }*/
                         switch (sectionName) {
                             case "ALL":
                                 return reviews;
@@ -247,6 +279,14 @@ public class MainActivity extends AppCompatActivity {
                                     }
                                 }
                                 return englishReviews;
+                            case "TAMIL":
+                                List<Review> tamilReviews = new ArrayList<>();
+                                for (Review review : reviews) {
+                                    if (StringUtils.equalsIgnoreCase(review.getLanguage(), "TAMIL")) {
+                                        tamilReviews.add(review);
+                                    }
+                                }
+                                return tamilReviews;
                         }
                         return reviews;
                     } catch (Exception e) {
@@ -258,8 +298,11 @@ public class MainActivity extends AppCompatActivity {
             fetcher.execute();
         }
 
-        public void loadReviews(List<Review> reviews, Context context, FragmentManager fragmentManager) {
+        public void loadReviews(List<Review> reviews, Context context, FragmentManager fragmentManager, TextView noContentTextView) {
             adapter = new CardAdapter(reviews, context, fragmentManager);
+            if (reviews.size() <= 0) {
+                noContentTextView.setVisibility(View.VISIBLE);
+            }
             recyclerView.setAdapter(adapter);
         }
     }

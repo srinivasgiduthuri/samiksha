@@ -15,13 +15,14 @@ import android.widget.ViewFlipper;
 import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import in.amigoscorp.samiksha.R;
 import in.amigoscorp.samiksha.activities.ItemDetailActivity;
 import in.amigoscorp.samiksha.fragments.ItemDetailFragment;
 import in.amigoscorp.samiksha.models.Review;
+
+import static in.amigoscorp.samiksha.constants.Constants.upcoming;
 
 /**
  * Created by sriny on 28/01/17.
@@ -31,6 +32,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     private Context context;
     private FragmentManager fragmentManager;
     private InterstitialAd interstitialAd;
+    private boolean isViewFlipperAdded = false;
 
     public CardAdapter(List<Review> reviews, Context context, FragmentManager fragmentManager) {
         this.reviews = reviews;
@@ -48,21 +50,17 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if(position == 0) {
-            List<String> urls = new ArrayList<>();
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/shatamanam_bhavati_et00044995_10-08-2016_03-32-09.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/khaidi-no-150-et00045498-22-08-2016-04-33-37.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/xxx_the_return_of_xander_cage_et00039285_20-07-2016_02-42-03.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/lukkunnodu-et00052593-24-01-2017-05-43-31.jpg");
+        if (position == 0 && !isViewFlipperAdded) {
             holder.imageViewFlipper.setInAnimation(context, R.anim.fade_in);
             holder.imageViewFlipper.setOutAnimation(context, R.anim.fade_out);
-            for (String url : urls) {
+            for (Review upcomingReview : upcoming) {
                 ImageView imageView = new ImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setAdjustViewBounds(true);
-                Picasso.with(imageView.getContext()).load(url).into(imageView);
+                Picasso.with(imageView.getContext()).load(upcomingReview.getImageUrl()).into(imageView);
                 holder.imageViewFlipper.addView(imageView);
             }
+            isViewFlipperAdded = true;
         }
         final Review review = reviews.get(position);
         Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);

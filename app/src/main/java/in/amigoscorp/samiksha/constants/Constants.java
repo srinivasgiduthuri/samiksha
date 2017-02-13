@@ -3,6 +3,7 @@ package in.amigoscorp.samiksha.constants;
 import java.util.List;
 
 import in.amigoscorp.samiksha.models.Review;
+import in.amigoscorp.samiksha.models.Tab;
 
 /**
  * Created by sriny on 08/02/17.
@@ -10,4 +11,6 @@ import in.amigoscorp.samiksha.models.Review;
 
 public final class Constants {
     public static List<Review> reviews;
+    public static List<Review> upcoming;
+    public static List<Tab> tabs;
 }
