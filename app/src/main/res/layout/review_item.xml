@@ -7,11 +7,6 @@
     android:orientation="vertical"
     tools:context="in.amigoscorp.samiksha.activities.MainActivity$PlaceholderFragment">
 
-    <FrameLayout
-        android:id="@+id/content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -42,14 +37,15 @@
             android:stepSize="0.25"
             android:theme="@style/RatingBar" />
     </LinearLayout>
+
     <TextView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/punch_line"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:layout_marginTop="-10dp"
-        android:paddingLeft="15dp"
         android:paddingBottom="10dp"
-        android:textSize="12sp"
-        android:text="@string/no_content"/>
+        android:paddingLeft="15dp"
+        android:text="@string/no_content"
+        android:textSize="12sp" />
 </LinearLayout>

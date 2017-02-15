@@ -3,10 +3,15 @@ package in.amigoscorp.samiksha.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by sriny on 30/01/17.
@@ -30,10 +35,14 @@ public class Review implements Parcelable {
     private String imageUrl;
     @JsonProperty("language")
     private String language;
+    @JsonProperty("trailer_id")
+    private String trailerId;
     @JsonProperty("reviewers")
     private List<Reviewer> reviewers;
     @JsonProperty("rank")
     private Integer rank;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public Review() {
     }
@@ -42,6 +51,7 @@ public class Review implements Parcelable {
         name = in.readString();
         imageUrl = in.readString();
         language = in.readString();
+        trailerId = in.readString();
         rank = in.readInt();
         reviewers = in.createTypedArrayList(Reviewer.CREATOR);
     }
@@ -98,6 +108,16 @@ public class Review implements Parcelable {
         this.language = language;
     }
 
+    @JsonProperty("trailer_id")
+    public String getTrailerId() {
+        return trailerId;
+    }
+
+    @JsonProperty("trailer_id")
+    public void setTrailerId(String trailerId) {
+        this.trailerId = trailerId;
+    }
+
     @JsonProperty("reviewers")
     public List<Reviewer> getReviewers() {
         return reviewers;
@@ -118,6 +138,16 @@ public class Review implements Parcelable {
         this.rank = rank;
     }
 
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -128,6 +158,7 @@ public class Review implements Parcelable {
         parcel.writeString(name);
         parcel.writeString(imageUrl);
         parcel.writeString(language);
+        parcel.writeString(trailerId);
         parcel.writeInt(rank);
         parcel.writeTypedList(reviewers);
     }

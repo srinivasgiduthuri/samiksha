@@ -160,23 +160,6 @@ public class MainActivity extends AppCompatActivity {
 
             recyclerView.setLayoutManager(layoutManager);
             getData(rootView.getContext(), getArguments().getString(ARG_SECTION_NAME), noContentTextView);
-
-            /*List<String> urls = new ArrayList<>();
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/shatamanam_bhavati_et00044995_10-08-2016_03-32-09.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/khaidi-no-150-et00045498-22-08-2016-04-33-37.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/xxx_the_return_of_xander_cage_et00039285_20-07-2016_02-42-03.jpg");
-            urls.add("http://in.bmscdn.com/iedb/movies/images/mobile/listing/large/lukkunnodu-et00052593-24-01-2017-05-43-31.jpg");
-            ViewFlipper imageViewFlipper = (ViewFlipper) rootView.findViewById(R.id.image_view_flipper);
-            imageViewFlipper.setInAnimation(rootView.getContext(), R.anim.fade_in);
-            imageViewFlipper.setOutAnimation(rootView.getContext(), R.anim.fade_out);
-            for (String url : urls) {
-                ImageView imageView = new ImageView(rootView.getContext());
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setAdjustViewBounds(true);
-                Picasso.with(imageView.getContext()).load(url).into(imageView);
-                imageViewFlipper.addView(imageView);
-            }*/
-
             swipeContainer = (SwipeRefreshLayout) rootView.findViewById(R.id.swipe_container);
             // Setup refresh listener which triggers new data loading
             swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {

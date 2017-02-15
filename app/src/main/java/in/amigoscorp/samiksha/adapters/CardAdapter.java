@@ -2,18 +2,22 @@ package in.amigoscorp.samiksha.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
 import com.google.android.gms.ads.InterstitialAd;
 import com.squareup.picasso.Picasso;
+
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
@@ -63,10 +67,16 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             isViewFlipperAdded = true;
         }
         final Review review = reviews.get(position);
-        Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);
+        //review.setImageUrl("");
+        if (StringUtils.isNotBlank(review.getImageUrl())) {
+            Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);
+        } else {
+            holder.title.setTypeface(Typeface.createFromAsset(context.getAssets(), "pacifico.ttf"));
+            holder.title.setText(review.getName());
+        }
         holder.textViewName.setText(review.getName());
         holder.textViewUrl.setText(review.getLanguage());
-        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+        holder.linearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), ItemDetailActivity.class);
@@ -82,6 +92,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                         showInterstitial();
                     }
                 });*/
+                context.startActivity(intent);
+            }
+        });
+        holder.relativeLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), ItemDetailActivity.class);
+                intent.putExtra("REVIEW", review);
+                intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, review.getName());
                 context.startActivity(intent);
             }
         });
@@ -110,19 +129,23 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         public RelativeLayout relativeLayout;
+        public LinearLayout linearLayout;
         public ImageView imageView;
         public TextView textViewName;
         public TextView textViewUrl;
         public ViewFlipper imageViewFlipper;
+        public TextView title;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
+            linearLayout = (LinearLayout) itemView.findViewById(R.id.review_card_linear_layout);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.reviewCardDetailsLayout);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
             textViewName = (TextView) itemView.findViewById(R.id.textViewName);
             textViewUrl = (TextView) itemView.findViewById(R.id.textViewLanguage);
             imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
+            title = (TextView) itemView.findViewById(R.id.title);
 
         }
     }

@@ -3,9 +3,15 @@ package in.amigoscorp.samiksha.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
+import com.fasterxml.jackson.annotation.JsonAnySetter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by sriny on 30/01/17.
@@ -28,6 +34,8 @@ public class Reviewer implements Parcelable {
     private int actualRating;
     @JsonProperty("punch_line")
     private String punchLine;
+    @JsonIgnore
+    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
     public Reviewer() {
     }
@@ -89,6 +97,16 @@ public class Reviewer implements Parcelable {
     @JsonProperty("punch_line")
     public void setPunchLine(String punchLine) {
         this.punchLine = punchLine;
+    }
+
+    @JsonAnyGetter
+    public Map<String, Object> getAdditionalProperties() {
+        return this.additionalProperties;
+    }
+
+    @JsonAnySetter
+    public void setAdditionalProperty(String name, Object value) {
+        this.additionalProperties.put(name, value);
     }
 
     @Override
