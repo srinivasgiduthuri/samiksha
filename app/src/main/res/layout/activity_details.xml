@@ -71,7 +71,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:text="@string/no_content"
+                android:text="@string/no_trailer"
                 android:textAlignment="center"
                 android:textColor="@color/colorWhite"/>
         </RelativeLayout>

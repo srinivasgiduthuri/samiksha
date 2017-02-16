@@ -67,7 +67,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             isViewFlipperAdded = true;
         }
         final Review review = reviews.get(position);
-        //review.setImageUrl("");
         if (StringUtils.isNotBlank(review.getImageUrl())) {
             Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);
         } else {
@@ -82,16 +81,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                 Intent intent = new Intent(view.getContext(), ItemDetailActivity.class);
                 intent.putExtra("REVIEW", review);
                 intent.putExtra(ItemDetailFragment.ARG_ITEM_ID, review.getName());
-                /*interstitialAd = new InterstitialAd(view.getContext());
-                interstitialAd.setAdUnitId(view.getContext().getString(R.string.interstitial_ad_unit_id));
-                //AdRequest adRequest = new AdRequest.Builder().build();
-                AdRequest adRequest = new AdRequest.Builder().addTestDevice("5536D1B05104BEAE29A3AC347F5E2160").build();
-                interstitialAd.loadAd(adRequest);
-                interstitialAd.setAdListener(new AdListener() {
-                    public void onAdLoaded() {
-                        showInterstitial();
-                    }
-                });*/
                 context.startActivity(intent);
             }
         });
@@ -104,12 +93,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                 context.startActivity(intent);
             }
         });
-    }
-
-    private void showInterstitial() {
-        if (interstitialAd.isLoaded()) {
-            interstitialAd.show();
-        }
     }
 
     @Override

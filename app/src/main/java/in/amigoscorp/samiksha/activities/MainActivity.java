@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.ads.AdRequest;
@@ -36,6 +37,7 @@ import in.amigoscorp.samiksha.R;
 import in.amigoscorp.samiksha.adapters.CardAdapter;
 import in.amigoscorp.samiksha.models.Review;
 import in.amigoscorp.samiksha.utils.AwsUtils;
+import in.amigoscorp.samiksha.utils.CommonUtils;
 
 import static in.amigoscorp.samiksha.constants.Constants.reviews;
 
@@ -48,35 +50,40 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ScheduledExecutorService scheduler =
-                Executors.newSingleThreadScheduledExecutor();
-
-        scheduler.scheduleAtFixedRate
-                (new Runnable() {
-                    public void run() {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                new AwsUtils().execute();
-                            }
-                        });
-                    }
-                }, 0, 4, TimeUnit.HOURS);
-
         setContentView(R.layout.activity_main);
+        RelativeLayout relativeLayout = (RelativeLayout) findViewById(R.id.no_network_relative_layout);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        viewPager = (ViewPager) findViewById(R.id.container);
-        viewPager.setAdapter(sectionsPagerAdapter);
+        relativeLayout.setVisibility(View.GONE);
+        if (CommonUtils.isNetworkAvailable(this)) {
+            ScheduledExecutorService scheduler =
+                    Executors.newSingleThreadScheduledExecutor();
 
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(viewPager);
+            scheduler.scheduleAtFixedRate
+                    (new Runnable() {
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    new AwsUtils().execute();
+                                }
+                            });
+                        }
+                    }, 0, 4, TimeUnit.HOURS);
 
-        bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
-        AdRequest adRequest = new AdRequest.Builder().build();
-        bannerAdView.loadAd(adRequest);
+            sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+            viewPager = (ViewPager) findViewById(R.id.container);
+            viewPager.setAdapter(sectionsPagerAdapter);
 
+            TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+            tabLayout.setupWithViewPager(viewPager);
+
+            bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            bannerAdView.loadAd(adRequest);
+        } else {
+            relativeLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     public class SectionsPagerAdapter extends FragmentStatePagerAdapter {
@@ -213,10 +220,6 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 protected List<Review> doInBackground(Void... params) {
                     try {
-                        /*ObjectMapper objectMapper = new ObjectMapper();
-                        InputStream fileInputStream = context.getResources().openRawResource(R.raw.reviews);
-                        List<Review> reviews = objectMapper.readValue(fileInputStream, new TypeReference<List<Review>>() {
-                        });*/
                         Collections.sort(reviews, new Comparator<Review>() {
                             @Override
                             public int compare(Review review1, Review review2) {
@@ -224,17 +227,6 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
 
-                        /*if ("ALL".equalsIgnoreCase(sectionName)) {
-                            return reviews;
-                        } else {
-                            List<Review> filteredReviews = new ArrayList<>();
-                            for (Review review : reviews) {
-                                if (StringUtils.equalsIgnoreCase(review.getLanguage(), sectionName)) {
-                                    filteredReviews.add(review);
-                                }
-                            }
-                            return filteredReviews;
-                        }*/
                         switch (sectionName) {
                             case "ALL":
                                 return reviews;
