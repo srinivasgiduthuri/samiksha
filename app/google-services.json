@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "406274454524",
+    "firebase_url": "https://samiksha-72c6c.firebaseio.com",
+    "project_id": "samiksha-72c6c",
+    "storage_bucket": "samiksha-72c6c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:406274454524:android:fb4721acf2379648",
+        "android_client_info": {
+          "package_name": "in.amigoscorp.samiksha"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "406274454524-q638ivckaasn21rgq11p7velvdg7pfne.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfU-3m7bD_j-C0Yy9DvdJqa_rshowAmck"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

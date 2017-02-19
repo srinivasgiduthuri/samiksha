@@ -5,4 +5,5 @@
     <string name="no_content">No content to display.</string>
     <string name="no_internet_connection">Network connection is available.</string>
     <string name="no_trailer">Sorry! No trailer available.</string>
+    <string name="samiksha_rating">Samiksha\'s Rating</string>
 </resources>

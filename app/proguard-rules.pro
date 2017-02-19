@@ -16,4 +16,13 @@
 #   public *;
 #}
 
--ignorewarnings
+-dontwarn com.squareup.**
+-dontwarn com.fasterxml.**
+-dontwarn okio.**
+
+-keepnames class com.fasterxml.jackson.** {
+*;
+}
+-keepnames interface com.fasterxml.jackson.** {
+    *;
+}

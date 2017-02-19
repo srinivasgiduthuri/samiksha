@@ -13,6 +13,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class YouTubeListener implements YouTubePlayer.OnInitializedListener {
     private String videoId;
+    private YouTubePlayer youTubePlayer;
 
     public YouTubeListener() {
     }
@@ -22,11 +23,14 @@ public class YouTubeListener implements YouTubePlayer.OnInitializedListener {
     }
     @Override
     public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean wasRestored) {
-        youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
-        youTubePlayer.setPlaybackEventListener(playbackEventListener);
+        this.youTubePlayer = youTubePlayer;
+        this.youTubePlayer.setPlayerStateChangeListener(playerStateChangeListener);
+        this.youTubePlayer.setPlaybackEventListener(playbackEventListener);
+        this.youTubePlayer.setPlayerStyle(YouTubePlayer.PlayerStyle.MINIMAL);
+
         if (!wasRestored) {
             if(StringUtils.isNotBlank(videoId)) {
-                youTubePlayer.loadVideo(videoId);
+                youTubePlayer.cueVideo(videoId);
             } else {
             }
         }

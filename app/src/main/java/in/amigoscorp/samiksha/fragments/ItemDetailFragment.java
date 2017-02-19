@@ -1,15 +1,11 @@
 package in.amigoscorp.samiksha.fragments;
 
 import android.app.Activity;
-import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.google.android.youtube.player.YouTubePlayerSupportFragment;
@@ -18,10 +14,12 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 
+import in.amigoscorp.samiksha.BuildConfig;
 import in.amigoscorp.samiksha.R;
+import in.amigoscorp.samiksha.adapters.PointsAdapter;
+import in.amigoscorp.samiksha.adapters.ReviewersAdapter;
 import in.amigoscorp.samiksha.models.Review;
 import in.amigoscorp.samiksha.models.Reviewer;
-import in.amigoscorp.samiksha.utils.Config;
 
 public class ItemDetailFragment extends Fragment {
     /**
@@ -49,43 +47,48 @@ public class ItemDetailFragment extends Fragment {
         if (getArguments().containsKey(ARG_ITEM_ID)) {
             Activity activity = this.getActivity();
             review = getArguments().getParcelable("REVIEW");
-            List<Reviewer> reviewers = review.getReviewers();
-            TextView noTrailerTextView = (TextView) activity.findViewById(R.id.no_trailer_text_view);
-            if (StringUtils.isNotBlank(review.getTrailerId())) {
-                noTrailerTextView.setVisibility(View.GONE);
-                YouTubePlayerSupportFragment youTubePlayerSupportFragment = (YouTubePlayerSupportFragment) getFragmentManager().findFragmentById(R.id.trailer_youtube_fragment);
-                youTubePlayerSupportFragment.initialize(Config.YOUTUBE_API_KEY, new YouTubeListener(review.getTrailerId()));
+            if (review != null) {
+                List<Reviewer> reviewers = review.getReviewers();
+                TextView noTrailerTextView = (TextView) activity.findViewById(R.id.no_trailer_text_view);
+                if (noTrailerTextView != null) {
+                    if (StringUtils.isNotBlank(review.getTrailerId())) {
+                        noTrailerTextView.setVisibility(View.GONE);
+                        YouTubePlayerSupportFragment youTubePlayerSupportFragment = (YouTubePlayerSupportFragment) getFragmentManager().findFragmentById(R.id.trailer_youtube_fragment);
+                        youTubePlayerSupportFragment.initialize(BuildConfig.YOUTUBE_API_KEY, new YouTubeListener(review.getTrailerId()));
+                    } else {
+                        noTrailerTextView.setVisibility(View.VISIBLE);
+                    }
+                }
+                ReviewersAdapter reviewersAdapter = new ReviewersAdapter(reviewers, getContext());
+                RecyclerView reviewsRecyclerView = (RecyclerView) activity.findViewById(R.id.reviews_recycler_view);
+                reviewsRecyclerView.setHasFixedSize(true);
+                reviewsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                reviewsRecyclerView.setAdapter(reviewersAdapter);
+
+                if (review.getPositives() != null && review.getPositives().size() > 0) {
+                    PointsAdapter positivePointsAdapter = new PointsAdapter("POSITIVE", review.getPositives(), getContext());
+                    RecyclerView recyclerView = (RecyclerView) activity.findViewById(R.id.positive_points_recycler_view);
+                    recyclerView.setHasFixedSize(true);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    recyclerView.setAdapter(positivePointsAdapter);
+                } else {
+                    TextView positiveHeadingTextView = (TextView) activity.findViewById(R.id.positive_heading_text_view);
+                    positiveHeadingTextView.setVisibility(View.GONE);
+                }
+                if (review.getNegatives() != null && review.getNegatives().size() > 0) {
+                    PointsAdapter negativePointsAdapter = new PointsAdapter("NEGATIVE", review.getNegatives(), getContext());
+                    RecyclerView negativeRecyclerView = (RecyclerView) activity.findViewById(R.id.negative_points_recycler_view);
+                    negativeRecyclerView.setHasFixedSize(true);
+                    negativeRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    negativeRecyclerView.setAdapter(negativePointsAdapter);
+                } else {
+                    TextView negativeHeadingTextView = (TextView) activity.findViewById(R.id.negative_heading_text_view);
+                    negativeHeadingTextView.setVisibility(View.GONE);
+                }
             } else {
-                noTrailerTextView.setVisibility(View.VISIBLE);
+                TextView ratingHeadingTextView = (TextView) activity.findViewById(R.id.rating_heading_text_view);
+                ratingHeadingTextView.setVisibility(View.GONE);
             }
-            ListView listView = (ListView) activity.findViewById(R.id.list_item);
-            MySimpleArrayAdapter arrayAdapter = new MySimpleArrayAdapter(getContext(), reviewers);
-            listView.setAdapter(arrayAdapter);
-        }
-    }
-
-    class MySimpleArrayAdapter extends ArrayAdapter<Reviewer> {
-        private final Context context;
-        private final List<Reviewer> reviewers;
-
-        public MySimpleArrayAdapter(Context context, List<Reviewer> reviewers) {
-            super(context, -1, reviewers);
-            this.context = context;
-            this.reviewers = reviewers;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = (LayoutInflater) context
-                    .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            View rowView = inflater.inflate(R.layout.review_item, parent, false);
-            TextView textView = (TextView) rowView.findViewById(R.id.label);
-            TextView punchLineTextView = (TextView) rowView.findViewById(R.id.punch_line);
-            RatingBar ratingBar = (RatingBar) rowView.findViewById(R.id.rating_bar);
-            textView.setText(reviewers.get(position).getSource());
-            ratingBar.setRating(reviewers.get(position).getActualRating());
-            punchLineTextView.setText(reviewers.get(position).getPunchLine());
-            return rowView;
         }
     }
 }

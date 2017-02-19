@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
@@ -67,11 +68,15 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             isViewFlipperAdded = true;
         }
         final Review review = reviews.get(position);
+        holder.samikshaRatingBar.setRating(review.getRating());
         if (StringUtils.isNotBlank(review.getImageUrl())) {
             Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);
+            holder.title.setVisibility(View.GONE);
         } else {
-            holder.title.setTypeface(Typeface.createFromAsset(context.getAssets(), "pacifico.ttf"));
+            Picasso.with(holder.imageView.getContext()).load(R.mipmap.feature_graphic_2).into(holder.imageView);
+            holder.title.setTypeface(Typeface.createFromAsset(context.getAssets(), "cinzel_regular.otf"));
             holder.title.setText(review.getName());
+            holder.title.setVisibility(View.VISIBLE);
         }
         holder.textViewName.setText(review.getName());
         holder.textViewUrl.setText(review.getLanguage());
@@ -97,7 +102,11 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
 
     @Override
     public int getItemCount() {
-        return reviews.size();
+        if (reviews != null && reviews.size() > 0) {
+            return reviews.size();
+        } else {
+            return 0;
+        }
     }
 
     public void clear() {
@@ -118,6 +127,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public TextView textViewUrl;
         public ViewFlipper imageViewFlipper;
         public TextView title;
+        public TextView samikshaRatingTextView;
+        public RatingBar samikshaRatingBar;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -129,6 +140,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             textViewUrl = (TextView) itemView.findViewById(R.id.textViewLanguage);
             imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
             title = (TextView) itemView.findViewById(R.id.title);
+            samikshaRatingTextView = (TextView) itemView.findViewById(R.id.samiksha_rating_label);
+            samikshaRatingBar = (RatingBar) itemView.findViewById(R.id.samiksha_rating_bar);
 
         }
     }

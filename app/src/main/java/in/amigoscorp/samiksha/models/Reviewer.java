@@ -22,16 +22,18 @@ import java.util.Map;
         "source",
         "max_rating",
         "actual_rating",
-        "punch_line"
+        "verdict"
 })
 public class Reviewer implements Parcelable {
 
     @JsonProperty("source")
     private String source;
     @JsonProperty("max_rating")
-    private int maxRating;
+    private float maxRating;
     @JsonProperty("actual_rating")
-    private int actualRating;
+    private float actualRating;
+    @JsonProperty("verdict")
+    private String verdict;
     @JsonProperty("punch_line")
     private String punchLine;
     @JsonIgnore
@@ -42,8 +44,9 @@ public class Reviewer implements Parcelable {
 
     public Reviewer(Parcel in) {
         source = in.readString();
-        maxRating = in.readInt();
-        actualRating = in.readInt();
+        maxRating = in.readFloat();
+        actualRating = in.readFloat();
+        verdict = in.readString();
         punchLine = in.readString();
     }
 
@@ -70,23 +73,33 @@ public class Reviewer implements Parcelable {
     }
 
     @JsonProperty("max_rating")
-    public int getMaxRating() {
+    public float getMaxRating() {
         return maxRating;
     }
 
     @JsonProperty("max_rating")
-    public void setMaxRating(int maxRating) {
+    public void setMaxRating(float maxRating) {
         this.maxRating = maxRating;
     }
 
     @JsonProperty("actual_rating")
-    public int getActualRating() {
+    public float getActualRating() {
         return actualRating;
     }
 
     @JsonProperty("actual_rating")
-    public void setActualRating(int actualRating) {
+    public void setActualRating(float actualRating) {
         this.actualRating = actualRating;
+    }
+
+    @JsonProperty("verdict")
+    public String getVerdict() {
+        return verdict;
+    }
+
+    @JsonProperty("verdict")
+    public void setVerdict(String verdict) {
+        this.verdict = verdict;
     }
 
     @JsonProperty("punch_line")
@@ -117,8 +130,9 @@ public class Reviewer implements Parcelable {
     @Override
     public void writeToParcel(Parcel parcel, int i) {
         parcel.writeString(source);
-        parcel.writeInt(maxRating);
-        parcel.writeInt(actualRating);
+        parcel.writeFloat(maxRating);
+        parcel.writeFloat(actualRating);
+        parcel.writeString(verdict);
         parcel.writeString(punchLine);
     }
 }

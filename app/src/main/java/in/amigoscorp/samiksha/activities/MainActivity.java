@@ -275,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
 
         public void loadReviews(List<Review> reviews, Context context, FragmentManager fragmentManager, TextView noContentTextView) {
             adapter = new CardAdapter(reviews, context, fragmentManager);
-            if (reviews.size() <= 0) {
+            if (reviews != null && reviews.size() <= 0) {
                 noContentTextView.setVisibility(View.VISIBLE);
             }
             recyclerView.setAdapter(adapter);

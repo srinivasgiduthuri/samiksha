@@ -23,7 +23,10 @@ import java.util.Map;
         "image_url",
         "language",
         "reviewers",
-        "rank"
+        "rank",
+        "positives",
+        "negatives",
+        "rating"
 })
 public class Review implements Parcelable {
 
@@ -41,6 +44,12 @@ public class Review implements Parcelable {
     private List<Reviewer> reviewers;
     @JsonProperty("rank")
     private Integer rank;
+    @JsonProperty("positives")
+    private List<String> positives;
+    @JsonProperty("negatives")
+    private List<String> negatives;
+    @JsonProperty("rating")
+    private float rating;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -48,12 +57,16 @@ public class Review implements Parcelable {
     }
 
     protected Review(Parcel in) {
+        id = in.readInt();
         name = in.readString();
         imageUrl = in.readString();
         language = in.readString();
         trailerId = in.readString();
         rank = in.readInt();
         reviewers = in.createTypedArrayList(Reviewer.CREATOR);
+        positives = in.createStringArrayList();
+        negatives = in.createStringArrayList();
+        rating = in.readFloat();
     }
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {
@@ -138,6 +151,36 @@ public class Review implements Parcelable {
         this.rank = rank;
     }
 
+    @JsonProperty("positives")
+    public List<String> getPositives() {
+        return positives;
+    }
+
+    @JsonProperty("positives")
+    public void setPositives(List<String> positives) {
+        this.positives = positives;
+    }
+
+    @JsonProperty("negatives")
+    public List<String> getNegatives() {
+        return negatives;
+    }
+
+    @JsonProperty("negatives")
+    public void setNegatives(List<String> negatives) {
+        this.negatives = negatives;
+    }
+
+    @JsonProperty("rating")
+    public float getRating() {
+        return rating;
+    }
+
+    @JsonProperty("rating")
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -155,11 +198,15 @@ public class Review implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(id);
         parcel.writeString(name);
         parcel.writeString(imageUrl);
         parcel.writeString(language);
         parcel.writeString(trailerId);
         parcel.writeInt(rank);
         parcel.writeTypedList(reviewers);
+        parcel.writeStringList(positives);
+        parcel.writeStringList(negatives);
+        parcel.writeFloat(rating);
     }
 }
