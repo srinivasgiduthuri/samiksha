@@ -37,13 +37,6 @@ public class AwsUtils extends AsyncTask<String, Void, Void> {
             String rawUpcoming = upcomingResponse.body().string();
             Constants.upcoming = OBJECT_MAPPER.readValue(rawUpcoming, new TypeReference<List<Review>>() {
             });
-            /*S3ObjectInputStream tabsInputStream = amazonS3.getObject(new GetObjectRequest("samiksha", "tabs.json")).getObjectContent();
-            List<String> tabsLines = IOUtils.readLines(tabsInputStream, Charset.forName("UTF-8"));
-            String rawTabs = StringUtils.join(tabsLines, " ");
-            Log.i(TAG, rawTabs);
-            Constants.tabs = OBJECT_MAPPER.readValue(rawTabs, new TypeReference<List<Tab>>() {
-            });
-            tabsInputStream.close();*/
         } catch (IOException e) {
             Log.e(TAG, e.getMessage());
         }

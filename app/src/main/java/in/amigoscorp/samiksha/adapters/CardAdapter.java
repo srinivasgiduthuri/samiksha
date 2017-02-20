@@ -66,6 +66,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                 holder.imageViewFlipper.addView(imageView);
             }
             isViewFlipperAdded = true;
+        } else {
+            holder.upcomingHeaderTextView.setVisibility(View.GONE);
         }
         final Review review = reviews.get(position);
         holder.samikshaRatingBar.setRating(review.getRating());
@@ -129,6 +131,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public TextView title;
         public TextView samikshaRatingTextView;
         public RatingBar samikshaRatingBar;
+        public TextView upcomingHeaderTextView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -142,6 +145,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             title = (TextView) itemView.findViewById(R.id.title);
             samikshaRatingTextView = (TextView) itemView.findViewById(R.id.samiksha_rating_label);
             samikshaRatingBar = (RatingBar) itemView.findViewById(R.id.samiksha_rating_bar);
+            upcomingHeaderTextView = (TextView) itemView.findViewById(R.id.upcoming_header_text_view);
 
         }
     }
