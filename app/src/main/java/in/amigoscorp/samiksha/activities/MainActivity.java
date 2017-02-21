@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
@@ -28,7 +29,9 @@ import org.apache.commons.lang3.StringUtils;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -40,6 +43,7 @@ import in.amigoscorp.samiksha.utils.AwsUtils;
 import in.amigoscorp.samiksha.utils.CommonUtils;
 
 import static in.amigoscorp.samiksha.constants.Constants.reviews;
+import static in.amigoscorp.samiksha.constants.Constants.upcoming;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -136,6 +140,8 @@ public class MainActivity extends AppCompatActivity {
         private RecyclerView.LayoutManager layoutManager;
         private CardAdapter adapter;
         private SwipeRefreshLayout swipeContainer;
+        private ViewFlipper imageViewFlipper;
+        private TextView upcomingHeaderTextView;
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -201,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         private void getData(final Context context, final String sectionName, final TextView noContentTextView) {
-            class ReviewsFetcher extends AsyncTask<Void, Void, List<Review>> {
+            class ReviewsFetcher extends AsyncTask<Void, Void, Map<String, List<Review>>> {
                 private ProgressDialog progressDialog;
 
                 @Override
@@ -211,15 +217,18 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 @Override
-                protected void onPostExecute(List<Review> reviews) {
-                    super.onPostExecute(reviews);
+                protected void onPostExecute(Map<String, List<Review>> mapOfReviews) {
+                    super.onPostExecute(mapOfReviews);
                     progressDialog.dismiss();
-                    loadReviews(reviews, context, getFragmentManager(), noContentTextView);
+                    loadReviews(mapOfReviews, context, getFragmentManager(), noContentTextView);
                 }
 
                 @Override
-                protected List<Review> doInBackground(Void... params) {
+                protected Map<String, List<Review>> doInBackground(Void... params) {
                     try {
+                        Map<String, List<Review>> reviewsMap = new HashMap<>();
+                        reviewsMap.put("REVIEWS", reviews);
+                        reviewsMap.put("UPCOMING", upcoming);
                         Collections.sort(reviews, new Comparator<Review>() {
                             @Override
                             public int compare(Review review1, Review review2) {
@@ -229,7 +238,7 @@ public class MainActivity extends AppCompatActivity {
 
                         switch (sectionName) {
                             case "ALL":
-                                return reviews;
+                                return reviewsMap;
                             case "TELUGU":
                                 List<Review> teluguReviews = new ArrayList<>();
                                 for (Review review : reviews) {
@@ -237,7 +246,16 @@ public class MainActivity extends AppCompatActivity {
                                         teluguReviews.add(review);
                                     }
                                 }
-                                return teluguReviews;
+                                List<Review> teluguUpcoming = new ArrayList<>();
+                                for (Review review : upcoming) {
+                                    if (StringUtils.equalsIgnoreCase(review.getLanguage(), "TELUGU")) {
+                                        teluguUpcoming.add(review);
+                                    }
+                                }
+                                Map<String, List<Review>> teluguReviewsMap = new HashMap<>();
+                                teluguReviewsMap.put("REVIEWS", teluguReviews);
+                                teluguReviewsMap.put("UPCOMING", teluguUpcoming);
+                                return teluguReviewsMap;
                             case "HINDI":
                                 List<Review> hindiReviews = new ArrayList<>();
                                 for (Review review : reviews) {
@@ -245,7 +263,16 @@ public class MainActivity extends AppCompatActivity {
                                         hindiReviews.add(review);
                                     }
                                 }
-                                return hindiReviews;
+                                List<Review> hindiUpcoming = new ArrayList<>();
+                                for (Review review : upcoming) {
+                                    if (StringUtils.equalsIgnoreCase(review.getLanguage(), "HINDI")) {
+                                        hindiUpcoming.add(review);
+                                    }
+                                }
+                                Map<String, List<Review>> hindiReviewsMap = new HashMap<>();
+                                hindiReviewsMap.put("REVIEWS", hindiReviews);
+                                hindiReviewsMap.put("UPCOMING", hindiUpcoming);
+                                return hindiReviewsMap;
                             case "ENGLISH":
                                 List<Review> englishReviews = new ArrayList<>();
                                 for (Review review : reviews) {
@@ -253,7 +280,16 @@ public class MainActivity extends AppCompatActivity {
                                         englishReviews.add(review);
                                     }
                                 }
-                                return englishReviews;
+                                List<Review> englishUpcoming = new ArrayList<>();
+                                for (Review review : upcoming) {
+                                    if (StringUtils.equalsIgnoreCase(review.getLanguage(), "ENGLISH")) {
+                                        englishUpcoming.add(review);
+                                    }
+                                }
+                                Map<String, List<Review>> englishReviewsMap = new HashMap<>();
+                                englishReviewsMap.put("REVIEWS", englishReviews);
+                                englishReviewsMap.put("UPCOMING", englishUpcoming);
+                                return englishReviewsMap;
                             case "TAMIL":
                                 List<Review> tamilReviews = new ArrayList<>();
                                 for (Review review : reviews) {
@@ -261,9 +297,18 @@ public class MainActivity extends AppCompatActivity {
                                         tamilReviews.add(review);
                                     }
                                 }
-                                return tamilReviews;
+                                List<Review> tamilUpcoming = new ArrayList<>();
+                                for (Review review : upcoming) {
+                                    if (StringUtils.equalsIgnoreCase(review.getLanguage(), "TAMIL")) {
+                                        tamilUpcoming.add(review);
+                                    }
+                                }
+                                Map<String, List<Review>> tamilReviewsMap = new HashMap<>();
+                                tamilReviewsMap.put("REVIEWS", tamilReviews);
+                                tamilReviewsMap.put("UPCOMING", tamilUpcoming);
+                                return tamilReviewsMap;
                         }
-                        return reviews;
+                        return reviewsMap;
                     } catch (Exception e) {
                         return null;
                     }
@@ -273,12 +318,16 @@ public class MainActivity extends AppCompatActivity {
             fetcher.execute();
         }
 
-        public void loadReviews(List<Review> reviews, Context context, FragmentManager fragmentManager, TextView noContentTextView) {
-            adapter = new CardAdapter(reviews, context, fragmentManager);
-            if (reviews != null && reviews.size() <= 0) {
+        public void loadReviews(Map<String, List<Review>> reviewsMap, Context context, FragmentManager fragmentManager, TextView noContentTextView) {
+            if (reviewsMap == null || reviewsMap.size() <= 0) {
                 noContentTextView.setVisibility(View.VISIBLE);
+                return;
             }
+            List<Review> reviews = reviewsMap.get("REVIEWS");
+            List<Review> upcoming = reviewsMap.get("UPCOMING");
+            adapter = new CardAdapter(reviews, upcoming, context, fragmentManager);
             recyclerView.setAdapter(adapter);
+            recyclerView.setVerticalScrollbarPosition(0);
         }
     }
 }

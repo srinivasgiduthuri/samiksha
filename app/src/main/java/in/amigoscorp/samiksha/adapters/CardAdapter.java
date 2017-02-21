@@ -27,20 +27,20 @@ import in.amigoscorp.samiksha.activities.ItemDetailActivity;
 import in.amigoscorp.samiksha.fragments.ItemDetailFragment;
 import in.amigoscorp.samiksha.models.Review;
 
-import static in.amigoscorp.samiksha.constants.Constants.upcoming;
-
 /**
  * Created by sriny on 28/01/17.
  */
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     private List<Review> reviews;
+    private List<Review> upcoming;
     private Context context;
     private FragmentManager fragmentManager;
     private InterstitialAd interstitialAd;
     private boolean isViewFlipperAdded = false;
 
-    public CardAdapter(List<Review> reviews, Context context, FragmentManager fragmentManager) {
+    public CardAdapter(List<Review> reviews, List<Review> upcoming, Context context, FragmentManager fragmentManager) {
         this.reviews = reviews;
+        this.upcoming = upcoming;
         this.context = context;
         this.fragmentManager = fragmentManager;
     }
@@ -54,25 +54,50 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     }
 
     @Override
+    public void setHasStableIds(boolean hasStableIds) {
+        super.setHasStableIds(true);
+    }
+
+    @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        if (position == 0 && !isViewFlipperAdded) {
+        if (holder.getLayoutPosition() == 0) {
             holder.imageViewFlipper.setInAnimation(context, R.anim.fade_in);
             holder.imageViewFlipper.setOutAnimation(context, R.anim.fade_out);
             for (Review upcomingReview : upcoming) {
+                RelativeLayout relativeLayout = new RelativeLayout(context);
+                relativeLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                 ImageView imageView = new ImageView(context);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
                 imageView.setAdjustViewBounds(true);
-                Picasso.with(imageView.getContext()).load(upcomingReview.getImageUrl()).into(imageView);
-                holder.imageViewFlipper.addView(imageView);
+                Picasso.with(imageView.getContext()).load(upcomingReview.getImageUrl()).placeholder(R.mipmap.feature_graphic_2).into(imageView);
+                RelativeLayout.LayoutParams lp1 = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                lp1.addRule(RelativeLayout.CENTER_IN_PARENT);
+                imageView.setLayoutParams(lp1);
+                relativeLayout.addView(imageView);
+                TextView textView = new TextView(context);
+                textView.setText(upcomingReview.getName());
+                textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
+                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.MATCH_PARENT,
+                        RelativeLayout.LayoutParams.WRAP_CONTENT);
+                lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                textView.setLayoutParams(lp);
+                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+                textView.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
+                relativeLayout.addView(textView);
+                holder.imageViewFlipper.addView(relativeLayout);
             }
-            isViewFlipperAdded = true;
+            holder.imageViewFlipperRelativeLayout.setVisibility(View.VISIBLE);
+
         } else {
-            holder.upcomingHeaderTextView.setVisibility(View.GONE);
+            holder.imageViewFlipperRelativeLayout.setVisibility(View.GONE);
         }
         final Review review = reviews.get(position);
         holder.samikshaRatingBar.setRating(review.getRating());
         if (StringUtils.isNotBlank(review.getImageUrl())) {
-            Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).into(holder.imageView);
+            Picasso.with(holder.imageView.getContext()).load(review.getImageUrl()).placeholder(R.mipmap.feature_graphic_2).into(holder.imageView);
             holder.title.setVisibility(View.GONE);
         } else {
             Picasso.with(holder.imageView.getContext()).load(R.mipmap.feature_graphic_2).into(holder.imageView);
@@ -127,26 +152,26 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public ImageView imageView;
         public TextView textViewName;
         public TextView textViewUrl;
-        public ViewFlipper imageViewFlipper;
         public TextView title;
         public TextView samikshaRatingTextView;
         public RatingBar samikshaRatingBar;
-        public TextView upcomingHeaderTextView;
+        public ViewFlipper imageViewFlipper;
+        public ImageView ribbonImageView;
+        public RelativeLayout imageViewFlipperRelativeLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
-
             linearLayout = (LinearLayout) itemView.findViewById(R.id.review_card_linear_layout);
             relativeLayout = (RelativeLayout) itemView.findViewById(R.id.reviewCardDetailsLayout);
             imageView = (ImageView) itemView.findViewById(R.id.imageView);
             textViewName = (TextView) itemView.findViewById(R.id.textViewName);
             textViewUrl = (TextView) itemView.findViewById(R.id.textViewLanguage);
-            imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
             title = (TextView) itemView.findViewById(R.id.title);
             samikshaRatingTextView = (TextView) itemView.findViewById(R.id.samiksha_rating_label);
             samikshaRatingBar = (RatingBar) itemView.findViewById(R.id.samiksha_rating_bar);
-            upcomingHeaderTextView = (TextView) itemView.findViewById(R.id.upcoming_header_text_view);
-
+            imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
+            ribbonImageView = (ImageView) itemView.findViewById(R.id.ribbon_image_view);
+            imageViewFlipperRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.image_view_flipper_relative_layout);
         }
     }
 }

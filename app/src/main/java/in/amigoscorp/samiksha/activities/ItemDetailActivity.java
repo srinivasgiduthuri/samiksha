@@ -7,11 +7,15 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+
 import in.amigoscorp.samiksha.R;
 import in.amigoscorp.samiksha.fragments.ItemDetailFragment;
 import in.amigoscorp.samiksha.models.Review;
 
 public class ItemDetailActivity extends AppCompatActivity {
+    private AdView bannerAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,9 @@ public class ItemDetailActivity extends AppCompatActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.item_detail_container, fragment)
                     .commit();
+            bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
+            AdRequest adRequest = new AdRequest.Builder().build();
+            bannerAdView.loadAd(adRequest);
         }
     }
 
