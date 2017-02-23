@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +16,12 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.NativeExpressAdView;
+import com.google.android.gms.ads.VideoController;
+import com.google.android.gms.ads.VideoOptions;
 import com.squareup.picasso.Picasso;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +42,8 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     private Context context;
     private FragmentManager fragmentManager;
     private InterstitialAd interstitialAd;
-    private boolean isViewFlipperAdded = false;
+    private VideoController mVideoController;
+    private static final String TAG = CardAdapter.class.getSimpleName();
 
     public CardAdapter(List<Review> reviews, List<Review> upcoming, Context context, FragmentManager fragmentManager) {
         this.reviews = reviews;
@@ -90,10 +97,44 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                 holder.imageViewFlipper.addView(relativeLayout);
             }
             holder.imageViewFlipperRelativeLayout.setVisibility(View.VISIBLE);
-
         } else {
             holder.imageViewFlipperRelativeLayout.setVisibility(View.GONE);
         }
+
+        if (holder.getLayoutPosition() % 2 == 0) {
+            AdRequest request = new AdRequest.Builder()
+                    .addTestDevice("E830655824F095F34E0D3681438FE3E1")
+                    .build();
+            holder.nativeExpressAdView.setVideoOptions(new VideoOptions.Builder()
+                    .setStartMuted(true)
+                    .build());
+
+            mVideoController = holder.nativeExpressAdView.getVideoController();
+            mVideoController.setVideoLifecycleCallbacks(new VideoController.VideoLifecycleCallbacks() {
+                @Override
+                public void onVideoEnd() {
+                    Log.d(TAG, "Video playback is finished.");
+                    super.onVideoEnd();
+                }
+            });
+
+            holder.nativeExpressAdView.setAdListener(new AdListener() {
+                @Override
+                public void onAdLoaded() {
+                    if (mVideoController.hasVideoContent()) {
+                        Log.d(TAG, "Received an ad that contains a video asset.");
+                    } else {
+                        Log.d(TAG, "Received an ad that does not contain a video asset.");
+                    }
+                }
+            });
+
+            holder.nativeExpressAdView.loadAd(request);
+            holder.nativeExpressAdView.setVisibility(View.VISIBLE);
+        } else {
+            holder.nativeExpressAdView.setVisibility(View.GONE);
+        }
+
         final Review review = reviews.get(position);
         holder.samikshaRatingBar.setRating(review.getRating());
         if (StringUtils.isNotBlank(review.getImageUrl())) {
@@ -158,6 +199,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public ViewFlipper imageViewFlipper;
         public ImageView ribbonImageView;
         public RelativeLayout imageViewFlipperRelativeLayout;
+        public NativeExpressAdView nativeExpressAdView;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -172,6 +214,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
             ribbonImageView = (ImageView) itemView.findViewById(R.id.ribbon_image_view);
             imageViewFlipperRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.image_view_flipper_relative_layout);
+            nativeExpressAdView = (NativeExpressAdView) itemView.findViewById(R.id.native_express_ad_view);
         }
     }
 }

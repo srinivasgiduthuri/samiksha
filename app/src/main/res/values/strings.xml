@@ -6,4 +6,6 @@
     <string name="no_internet_connection">Network connection is available.</string>
     <string name="no_trailer">Sorry! No trailer available.</string>
     <string name="samiksha_rating">Samiksha\'s Rating</string>
+    <string name="preference_file_key">samiksha_pref_1</string>
+    <string name="notification_count">notification_count</string>
 </resources>

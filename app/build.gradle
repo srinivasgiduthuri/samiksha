@@ -1,5 +1,26 @@
 apply plugin: 'com.android.application'
 
+buildscript {
+    repositories {
+        maven { url 'https://maven.fabric.io/public' }
+    }
+
+    dependencies {
+        // These docs use an open ended version so that our plugin
+        // can be updated quickly in response to Android tooling updates
+
+        // We recommend changing it to the latest version from our changelog:
+        // https://docs.fabric.io/android/changelog.html#fabric-gradle-plugin
+        classpath 'io.fabric.tools:gradle:1.22.1'
+    }
+}
+
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 android {
     signingConfigs {
         config {
@@ -20,6 +41,13 @@ android {
         buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyCMigGOVnQfkqqRYtr4kBQ_nBHKVnA43QM\""
         buildConfigField "String", "AWS_ACCESS_KEY", "\"AKIAJ3DCRR5Y2FRBHXWQ\""
         buildConfigField "String", "AWS_SECRET_KEY", "\"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\""
+        buildConfigField "String", "PUBNUB_SUBSCRIBE_KEY", "\"sub-c-2ecb576a-f8b8-11e6-bb94-0619f8945a4f\""
+        buildConfigField "String", "AWS_SAMIKSHA_BUCKET_NAME", "\"samiksha\""
+        buildConfigField "String", "AWS_SAMIKSHA_USERS_BUCKET_NAME", "\"samiksha/users\""
+        buildConfigField "String", "AWS_REVIEWS_OBJECT_KEY", "\"reviews.json\""
+        buildConfigField "String", "AWS_UPCOMING_OBJECT_KEY", "\"upcoming.json\""
+        buildConfigField "String", "AWS_USERS_OBJECT_KEY", "\"user.json\""
+        buildConfigField "String", "FCM_TOPIC", "\"samiksha_pn_topic\""
     }
     buildTypes {
         release {
@@ -65,6 +93,14 @@ dependencies {
     compile 'com.android.support:support-v4:25.1.1'
     compile 'com.squareup.okhttp3:okhttp:3.6.0'
     compile group: 'com.amazonaws', name: 'aws-android-sdk-s3', version: '2.3.9'
+    compile('com.crashlytics.sdk.android:crashlytics:2.6.6@aar') {
+        transitive = true;
+    }
+    compile('com.crashlytics.sdk.android:answers:1.3.11@aar') {
+        transitive = true;
+    }
+    compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.5.0'
+    compile 'com.google.firebase:firebase-messaging:10.2.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

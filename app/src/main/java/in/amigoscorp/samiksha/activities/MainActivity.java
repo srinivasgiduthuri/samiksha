@@ -21,7 +21,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
-import com.google.android.gms.ads.AdRequest;
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.answers.Answers;
 import com.google.android.gms.ads.AdView;
 
 import org.apache.commons.lang3.StringUtils;
@@ -39,8 +40,9 @@ import java.util.concurrent.TimeUnit;
 import in.amigoscorp.samiksha.R;
 import in.amigoscorp.samiksha.adapters.CardAdapter;
 import in.amigoscorp.samiksha.models.Review;
-import in.amigoscorp.samiksha.utils.AwsUtils;
 import in.amigoscorp.samiksha.utils.CommonUtils;
+import in.amigoscorp.samiksha.utils.SamikshaContentDownloader;
+import io.fabric.sdk.android.Fabric;
 
 import static in.amigoscorp.samiksha.constants.Constants.reviews;
 import static in.amigoscorp.samiksha.constants.Constants.upcoming;
@@ -60,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         relativeLayout.setVisibility(View.GONE);
         if (CommonUtils.isNetworkAvailable(this)) {
+            Fabric.with(this, new Crashlytics());
+            Fabric.with(this, new Answers());
+            CommonUtils.androidId(getContentResolver());
             ScheduledExecutorService scheduler =
                     Executors.newSingleThreadScheduledExecutor();
 
@@ -69,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    new AwsUtils().execute();
+                                    new SamikshaContentDownloader().execute();
                                 }
                             });
                         }
@@ -82,9 +87,12 @@ public class MainActivity extends AppCompatActivity {
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(viewPager);
 
-            bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
-            AdRequest adRequest = new AdRequest.Builder().build();
-            bannerAdView.loadAd(adRequest);
+            /*bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
+            AdRequest adRequest = new AdRequest.Builder().addTestDevice("E830655824F095F34E0D3681438FE3E1").build();
+            bannerAdView.loadAd(adRequest);*/
+            CommonUtils.subscribeTopicViaFirebase();
+            CommonUtils.firebaseToken();
+            CommonUtils.sendRegistrationToServer(getApplicationContext());
         } else {
             relativeLayout.setVisibility(View.VISIBLE);
         }
@@ -200,7 +208,7 @@ public class MainActivity extends AppCompatActivity {
             // getHomeTimeline is an example endpoint.
 
             // Remember to CLEAR OUT old items before appending in the new ones
-            new AwsUtils().execute();
+            new SamikshaContentDownloader().execute();
             getData(context, sectionName, noContentTextView);
             swipeContainer.setRefreshing(false);
         }
