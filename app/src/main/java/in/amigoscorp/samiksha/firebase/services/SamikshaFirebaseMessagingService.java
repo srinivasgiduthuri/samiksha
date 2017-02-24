@@ -47,18 +47,18 @@ public class SamikshaFirebaseMessagingService extends FirebaseMessagingService {
 
         // TODO(developer): Handle FCM messages here.
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
-        Log.d(TAG, "From: " + remoteMessage.getFrom());
+        Log.i(TAG, "From: " + remoteMessage.getFrom());
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Log.d(TAG, "Message data payload: " + remoteMessage.getData());
+            Log.i(TAG, "Message data payload: " + remoteMessage.getData());
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
-            sendNotification(remoteMessage);
+            Log.i(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
+        sendNotification(remoteMessage);
 
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -99,7 +99,7 @@ public class SamikshaFirebaseMessagingService extends FirebaseMessagingService {
         Map<String, String> data = remoteMessage.getData();
         if (data != null && data.size() > 0) {
             if (data.containsKey("title") && data.containsKey("text")) {
-                new DisplayNotification(getApplicationContext(), data.get("title"), data.get("text"), data.get("image_url")).execute();
+                new DisplayNotification(getApplicationContext(), data.get("title"), data.get("text"), data.get("image_url"), data.get("language")).execute();
             }
         }
     }

@@ -26,7 +26,8 @@ import java.util.Map;
         "rank",
         "positives",
         "negatives",
-        "rating"
+        "rating",
+        "description"
 })
 public class Review implements Parcelable {
 
@@ -50,6 +51,8 @@ public class Review implements Parcelable {
     private List<String> negatives;
     @JsonProperty("rating")
     private float rating;
+    @JsonProperty("description")
+    private String description;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
@@ -67,6 +70,7 @@ public class Review implements Parcelable {
         positives = in.createStringArrayList();
         negatives = in.createStringArrayList();
         rating = in.readFloat();
+        description = in.readString();
     }
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {
@@ -181,6 +185,16 @@ public class Review implements Parcelable {
         this.rating = rating;
     }
 
+    @JsonProperty("description")
+    public String getDescription() {
+        return description;
+    }
+
+    @JsonProperty("description")
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @JsonAnyGetter
     public Map<String, Object> getAdditionalProperties() {
         return this.additionalProperties;
@@ -208,5 +222,6 @@ public class Review implements Parcelable {
         parcel.writeStringList(positives);
         parcel.writeStringList(negatives);
         parcel.writeFloat(rating);
+        parcel.writeString(description);
     }
 }

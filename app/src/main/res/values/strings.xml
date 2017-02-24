@@ -8,4 +8,9 @@
     <string name="samiksha_rating">Samiksha\'s Rating</string>
     <string name="preference_file_key">samiksha_pref_1</string>
     <string name="notification_count">notification_count</string>
+    <string name="no_description_content_to_display">No description content to display.</string>
+    <string name="description">DESCRIPTION</string>
+    <string name="ratings">RATINGS</string>
+    <string name="positives">POSITIVES</string>
+    <string name="negatives">NEGATIVES</string>
 </resources>

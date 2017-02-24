@@ -85,6 +85,17 @@ public class ItemDetailFragment extends Fragment {
                     TextView negativeHeadingTextView = (TextView) activity.findViewById(R.id.negative_heading_text_view);
                     negativeHeadingTextView.setVisibility(View.GONE);
                 }
+
+                TextView descriptionHeaderTextView = (TextView) activity.findViewById(R.id.description_heading_text_view);
+                TextView descriptionContentTextView = (TextView) activity.findViewById(R.id.description_content_text_view);
+                if (StringUtils.isNotBlank(review.getDescription())) {
+                    descriptionHeaderTextView.setVisibility(View.VISIBLE);
+                    descriptionContentTextView.setVisibility(View.VISIBLE);
+                    descriptionContentTextView.setText(review.getDescription());
+                } else {
+                    descriptionHeaderTextView.setVisibility(View.GONE);
+                    descriptionContentTextView.setVisibility(View.GONE);
+                }
             } else {
                 TextView ratingHeadingTextView = (TextView) activity.findViewById(R.id.rating_heading_text_view);
                 ratingHeadingTextView.setVisibility(View.GONE);

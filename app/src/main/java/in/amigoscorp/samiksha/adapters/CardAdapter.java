@@ -2,6 +2,7 @@ package in.amigoscorp.samiksha.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +19,7 @@ import android.widget.ViewFlipper;
 
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.NativeExpressAdView;
 import com.google.android.gms.ads.VideoController;
@@ -102,9 +104,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         }
 
         if (holder.getLayoutPosition() % 2 == 0) {
-            AdRequest request = new AdRequest.Builder()
-                    .addTestDevice("E830655824F095F34E0D3681438FE3E1")
-                    .build();
+            AdRequest request = new AdRequest.Builder().build();
             holder.nativeExpressAdView.setVideoOptions(new VideoOptions.Builder()
                     .setStartMuted(true)
                     .build());
@@ -128,7 +128,6 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
                     }
                 }
             });
-
             holder.nativeExpressAdView.loadAd(request);
             holder.nativeExpressAdView.setVisibility(View.VISIBLE);
         } else {
@@ -200,6 +199,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public ImageView ribbonImageView;
         public RelativeLayout imageViewFlipperRelativeLayout;
         public NativeExpressAdView nativeExpressAdView;
+        public RelativeLayout adHolderRelativeLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -214,7 +214,13 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
             ribbonImageView = (ImageView) itemView.findViewById(R.id.ribbon_image_view);
             imageViewFlipperRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.image_view_flipper_relative_layout);
-            nativeExpressAdView = (NativeExpressAdView) itemView.findViewById(R.id.native_express_ad_view);
+            adHolderRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.ad_holder_relative_layout);
+            nativeExpressAdView = new NativeExpressAdView(context);
+            float density = Resources.getSystem().getDisplayMetrics().density;
+            int width = (int) (Resources.getSystem().getDisplayMetrics().widthPixels / density) - 18;
+            nativeExpressAdView.setAdSize(new AdSize(width, 80));
+            nativeExpressAdView.setAdUnitId("ca-app-pub-1057023973348018/5942934086");
+            adHolderRelativeLayout.addView(nativeExpressAdView);
         }
     }
 }

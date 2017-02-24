@@ -38,6 +38,7 @@ android {
         targetSdkVersion 25
         versionCode 10
         versionName "1.2"
+        multiDexEnabled true
         buildConfigField "String", "YOUTUBE_API_KEY", "\"AIzaSyCMigGOVnQfkqqRYtr4kBQ_nBHKVnA43QM\""
         buildConfigField "String", "AWS_ACCESS_KEY", "\"AKIAJ3DCRR5Y2FRBHXWQ\""
         buildConfigField "String", "AWS_SECRET_KEY", "\"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\""
@@ -101,6 +102,7 @@ dependencies {
     }
     compile group: 'com.pubnub', name: 'pubnub-gson', version: '4.5.0'
     compile 'com.google.firebase:firebase-messaging:10.2.0'
+    compile 'com.android.support:multidex:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

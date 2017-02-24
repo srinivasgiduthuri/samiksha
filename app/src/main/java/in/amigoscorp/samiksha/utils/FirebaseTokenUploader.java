@@ -42,11 +42,12 @@ public class FirebaseTokenUploader extends AsyncTask<Void, Void, Void> {
     protected Void doInBackground(Void... voids) {
         AmazonS3 amazonS3 = new AmazonS3Client(AWS_CREDENTIALS);
         amazonS3.setRegion(Region.getRegion(Regions.AP_SOUTHEAST_1));
+        File file = null;
         try {
             FileOutputStream fileOutputStream = context.openFileOutput(BuildConfig.AWS_USERS_OBJECT_KEY, MODE_PRIVATE);
             OBJECT_MAPPER.writeValue(fileOutputStream, user);
             fileOutputStream.close();
-            File file = context.getFileStreamPath(BuildConfig.AWS_USERS_OBJECT_KEY);
+            file = context.getFileStreamPath(BuildConfig.AWS_USERS_OBJECT_KEY);
             FileInputStream fileInputStream = new FileInputStream(file);
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentType("application/json");
@@ -55,6 +56,10 @@ public class FirebaseTokenUploader extends AsyncTask<Void, Void, Void> {
             fileInputStream.close();
         } catch (IOException e) {
             Log.e(TAG, "Unable to create JSON for the user object.");
+        } finally {
+            if (file != null && file.exists()) {
+                file.delete();
+            }
         }
         return null;
     }

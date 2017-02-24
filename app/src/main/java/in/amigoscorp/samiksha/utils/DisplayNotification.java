@@ -23,27 +23,30 @@ public class DisplayNotification extends AsyncTask<Void, Void, Void> {
     private final String imageUrl;
     private final String title;
     private final String text;
+    private final String language;
 
-    public DisplayNotification(Context context, String title, String text, String imageUrl) {
+    public DisplayNotification(Context context, String title, String text, String imageUrl, String language) {
         this.context = context;
         this.title = title;
         this.text = text;
         this.imageUrl = imageUrl;
+        this.language = language;
     }
 
     @Override
     protected Void doInBackground(Void... voids) {
         int notificationCount = CommonUtils.readFromSharedPreferences(context, R.string.notification_count);
         Intent intent = new Intent(context, MainActivity.class);
+        intent.putExtra("language", language);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0 /* Request code */, intent,
                 PendingIntent.FLAG_ONE_SHOT);
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.drawable.ic_stat_movie_filter)
                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),
                         R.mipmap.ic_launcher))
                 .setContentTitle(title)
-                .setContentText(text)
+                .setSubText(text)
                 .setAutoCancel(true)
                 .setContentIntent(pendingIntent);
         if (StringUtils.isNotBlank(imageUrl)) {

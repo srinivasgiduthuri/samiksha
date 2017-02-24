@@ -23,7 +23,6 @@ import android.widget.ViewFlipper;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.answers.Answers;
-import com.google.android.gms.ads.AdView;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -51,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
 
     private SectionsPagerAdapter sectionsPagerAdapter;
     private ViewPager viewPager;
-    private AdView bannerAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,12 +85,19 @@ public class MainActivity extends AppCompatActivity {
             TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
             tabLayout.setupWithViewPager(viewPager);
 
-            /*bannerAdView = (AdView) findViewById(R.id.banner_ad_view);
-            AdRequest adRequest = new AdRequest.Builder().addTestDevice("E830655824F095F34E0D3681438FE3E1").build();
-            bannerAdView.loadAd(adRequest);*/
             CommonUtils.subscribeTopicViaFirebase();
             CommonUtils.firebaseToken();
             CommonUtils.sendRegistrationToServer(getApplicationContext());
+            Bundle bundle = this.getIntent().getExtras();
+            if (bundle != null && StringUtils.isNotBlank(bundle.getString("language"))) {
+                String language = bundle.getString("language");
+                for (int tabCount = 0; tabCount < sectionsPagerAdapter.getCount(); tabCount++) {
+                    if (StringUtils.equalsIgnoreCase(sectionsPagerAdapter.getPageTitle(tabCount), language)) {
+                        tabLayout.getTabAt(tabCount).select();
+                        break;
+                    }
+                }
+            }
         } else {
             relativeLayout.setVisibility(View.VISIBLE);
         }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="no_description_content_to_display">No description content to display.</string>
+    <string name="ratings">RATINGS</string>
+    <string name="positives">POSITIVES</string>
+    <string name="negatives">NEGATIVES</string>
+</resources>
