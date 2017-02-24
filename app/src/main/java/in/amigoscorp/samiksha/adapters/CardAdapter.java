@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Typeface;
+import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -17,6 +18,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.ViewFlipper;
 
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.Indicators.PagerIndicator;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdSize;
@@ -39,6 +45,7 @@ import in.amigoscorp.samiksha.models.Review;
  * Created by sriny on 28/01/17.
  */
 public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
+
     private List<Review> reviews;
     private List<Review> upcoming;
     private Context context;
@@ -70,34 +77,18 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         if (holder.getLayoutPosition() == 0) {
-            holder.imageViewFlipper.setInAnimation(context, R.anim.fade_in);
-            holder.imageViewFlipper.setOutAnimation(context, R.anim.fade_out);
             for (Review upcomingReview : upcoming) {
-                RelativeLayout relativeLayout = new RelativeLayout(context);
-                relativeLayout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-                ImageView imageView = new ImageView(context);
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setAdjustViewBounds(true);
-                Picasso.with(imageView.getContext()).load(upcomingReview.getImageUrl()).placeholder(R.mipmap.feature_graphic_2).into(imageView);
-                RelativeLayout.LayoutParams lp1 = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-                lp1.addRule(RelativeLayout.CENTER_IN_PARENT);
-                imageView.setLayoutParams(lp1);
-                relativeLayout.addView(imageView);
-                TextView textView = new TextView(context);
-                textView.setText(upcomingReview.getName());
-                textView.setTextColor(context.getResources().getColor(R.color.colorWhite));
-                RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.MATCH_PARENT,
-                        RelativeLayout.LayoutParams.WRAP_CONTENT);
-                lp.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                textView.setLayoutParams(lp);
-                textView.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
-                textView.setBackgroundColor(context.getResources().getColor(R.color.colorGray));
-                relativeLayout.addView(textView);
-                holder.imageViewFlipper.addView(relativeLayout);
+                TextSliderView textSliderView = new TextSliderView(context);
+                textSliderView.description(upcomingReview.getName()).image(upcomingReview.getImageUrl())
+                        .setScaleType(BaseSliderView.ScaleType.Fit);
+                textSliderView.bundle(new Bundle());
+                textSliderView.getBundle().putString("extra", upcomingReview.getName());
+                holder.sliderLayout.addSlider(textSliderView);
             }
+            holder.sliderLayout.setPresetTransformer(SliderLayout.Transformer.Fade);
+            holder.sliderLayout.setIndicatorVisibility(PagerIndicator.IndicatorVisibility.Invisible);
+            holder.sliderLayout.setCustomAnimation(new DescriptionAnimation());
+            holder.sliderLayout.setDuration(4000);
             holder.imageViewFlipperRelativeLayout.setVisibility(View.VISIBLE);
         } else {
             holder.imageViewFlipperRelativeLayout.setVisibility(View.GONE);
@@ -200,6 +191,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
         public RelativeLayout imageViewFlipperRelativeLayout;
         public NativeExpressAdView nativeExpressAdView;
         public RelativeLayout adHolderRelativeLayout;
+        public SliderLayout sliderLayout;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -211,7 +203,7 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             title = (TextView) itemView.findViewById(R.id.title);
             samikshaRatingTextView = (TextView) itemView.findViewById(R.id.samiksha_rating_label);
             samikshaRatingBar = (RatingBar) itemView.findViewById(R.id.samiksha_rating_bar);
-            imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
+            //imageViewFlipper = (ViewFlipper) itemView.findViewById(R.id.image_view_flipper);
             ribbonImageView = (ImageView) itemView.findViewById(R.id.ribbon_image_view);
             imageViewFlipperRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.image_view_flipper_relative_layout);
             adHolderRelativeLayout = (RelativeLayout) itemView.findViewById(R.id.ad_holder_relative_layout);
@@ -219,8 +211,9 @@ public class CardAdapter extends RecyclerView.Adapter<CardAdapter.ViewHolder> {
             float density = Resources.getSystem().getDisplayMetrics().density;
             int width = (int) (Resources.getSystem().getDisplayMetrics().widthPixels / density) - 18;
             nativeExpressAdView.setAdSize(new AdSize(width, 80));
-            nativeExpressAdView.setAdUnitId("ca-app-pub-1057023973348018/5942934086");
+            nativeExpressAdView.setAdUnitId(context.getString(R.string.native_ad));
             adHolderRelativeLayout.addView(nativeExpressAdView);
+            sliderLayout = (SliderLayout) itemView.findViewById(R.id.image_slider);
         }
     }
 }

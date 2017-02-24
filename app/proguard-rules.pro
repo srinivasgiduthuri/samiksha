@@ -37,7 +37,7 @@
 -keepattributes *Annotation*
 
 # Gson specific classes
--keep class sun.misc.Unsafe { *; }
+-dontwarn sun.misc.**
 #-keep class com.google.gson.stream.** { *; }
 
 # Application classes that will be serialized/deserialized over Gson
@@ -59,3 +59,7 @@
 -keepattributes Signature
 # Retain declared checked exceptions for use by a Proxy instance.
 -keepattributes Exceptions
+
+-dontwarn org.slf4j.LoggerFactory
+-dontwarn org.slf4j.MDC
+-dontwarn org.slf4j.MarkerFactory
